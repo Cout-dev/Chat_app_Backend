@@ -2,7 +2,7 @@ const WebSocket = require("ws");
 const axios = require("axios");
 
 // Use Render's assigned port or default to 8080
-const port = Number(process.env.PORT) || 8080;
+const port = Number(process.env.WS_PORT) || 8080;
 const wss = new WebSocket.Server({ port });
 
 
