@@ -1,57 +1,49 @@
-const WebSocket = require("ws");
-const axios = require("axios");
+const WebSocket = require('ws');
+const axios = require('axios');
 
-// Use Render's assigned port or default to 8080
-const port = Number(process.env.WS_PORT) || 8080;
-const wss = new WebSocket.Server({ port });
+const wss = new WebSocket.Server({ port: 8080 });
 
+wss.on('connection', (ws) => {
+  console.log('✅ Client Connected');
 
-console.log(`🚀 WebSocket running on ws://localhost:${port}`);
-
-wss.on("connection", (ws) => {
-  console.log("✅ Client Connected");
-
-  ws.on("message", async (data) => {
+  ws.on('message', async (data) => {
     try {
       const messageData = JSON.parse(data.toString());
-      console.log("📩 Received:", messageData);
+      console.log('📩 Received:', messageData);
 
       const token = messageData.token;
       if (!token) {
-        ws.send(JSON.stringify({ error: "❌ No authentication token provided." }));
-        return;
+        throw new Error('❌ No authentication token provided.');
       }
 
-      // Save message to Strapi
+      // Use correct field name "Timestamp" instead of "timestamp"
       const formattedData = {
         data: {
           message: messageData.message,
-          Timestamp: messageData.timestamp,
+          Timestamp: messageData.timestamp, // Fix casing here
         },
       };
 
-      const response = await axios.post(
-        "https://chat-application-backend-2yuj.onrender.com/api/chats",
-        formattedData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      // Save message to Strapi with Authentication Header
+      const response = await axios.post('http://localhost:1337/api/chats', formattedData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      console.log("✅ Message saved to Strapi:", response.data);
+      console.log('✅ Message saved to Strapi:', response.data);
 
-      ws.send(
-        JSON.stringify({
-          message: messageData.message,
-          Timestamp: messageData.timestamp,
-          status: "saved",
-        })
-      );
+      ws.send(JSON.stringify({
+        message: messageData.message,
+        Timestamp: messageData.timestamp, // Fix casing here as well
+        status: 'echoed',
+      }));
+
     } catch (error) {
-      console.error("❌ Error:", error.response?.data || error.message);
-      ws.send(JSON.stringify({ error: "Failed to save message" }));
+      console.error('❌ Error:', error.response?.data || error.message);
+      ws.send(JSON.stringify({ error: 'Failed to save message' }));
     }
   });
 
-  ws.on("close", () => console.log("🔴 Client Disconnected"));
+  ws.on('close', () => console.log('🔴 Client Disconnected'));
 });
+
+console.log('🚀 WebSocket running on ws://localhost:8080');
