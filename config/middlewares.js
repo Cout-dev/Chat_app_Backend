@@ -1,21 +1,17 @@
 module.exports = [
-  'strapi::logger',
-  'strapi::errors',
-  'strapi::security',
   {
-    name: 'strapi::cors',
+    name: "strapi::cors",
     config: {
-      enabled: true,
-      origin: ['http://localhost:5173'], // Allow frontend URL
-      headers: '*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      credentials: true,
+      origin: "*",
+      headers: ["Content-Type", "Authorization"],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     },
   },
-  'strapi::poweredBy',
-  'strapi::query',
-  'strapi::body',
-  'strapi::session',
-  'strapi::favicon',
-  'strapi::public',
+  "strapi::security",
+  "strapi::logger",
+  "strapi::query",
+  "strapi::body",
+  "strapi::session",
+  "strapi::favicon",
+  "strapi::public",
 ];
