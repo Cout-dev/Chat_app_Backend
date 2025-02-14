@@ -1,8 +1,9 @@
 module.exports = [
-  "strapi::errors",  // 🔥 Add this at the top
+  "strapi::errors",
   {
     name: "strapi::cors",
     config: {
+      enabled: true, // Ensure it's enabled
       origin: "*",
       headers: ["Content-Type", "Authorization"],
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
